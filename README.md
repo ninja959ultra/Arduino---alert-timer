@@ -25,7 +25,7 @@ int lastTime = 0;
 unsigned long travelTime;
 int distance;
 int timeOut;
-byte angle;
+byte angl1;
 int btn1Value;
 int btn2Value;
 int btn3Value;
@@ -36,6 +36,14 @@ bool checkDone = true;
 
 byte clickedButtons[4];
 byte rightButtons[4] = {2,4,1,3};
+
+
+void correctSignal() {
+  digitalWrite(blueLED, HIGH);
+  tone(buzzer, 700, 1000);
+  digitalWrite(blueLED, LOW);
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -57,6 +65,9 @@ void setup() {
 }
 
 void loop() {
+  lcd.clear();
+  lcd.print("Safe Mode");
+
   digitalWrite(trig, LOW);
   delayMicroseconds(10);
   digitalWrite(trig, HIGH);
@@ -73,8 +84,17 @@ void loop() {
 
     lastTime = millis();
 
-    while ((millis() - lastTime) < 10000){
-      timeOut = (millis() - lastTime);
+    lcd.clear();
+    lcd.print("Time Left");
+    lcd.print("    SEC");
+    
+    
+    while ((millis() - lastTime) / 1000 < 10.050){
+      lcd.setCursor(9, 0);
+      lcd.print(' ');
+      lcd.print(timeOut);
+
+      timeOut = (millis() - lastTime) / 1000;
 
       btn1Value = digitalRead(btn1);
       btn2Value = digitalRead(btn2);
@@ -82,58 +102,82 @@ void loop() {
       btn4Value = digitalRead(btn4);
 
       if (count < 4) {
-        if (btn1Value == LOW) {
-          clickedButtons[count] = 1;
-          count++;
-        }
-        
-        if (btn2Value == LOW) {
-          clickedButtons[count] = 2;
-          count++;
-        }
-        
-        if (btn3Value == LOW) {
-          clickedButtons[count] = 3;
-          count++;
+        if (millis() - lastTimePressed > 200){  // check no repeat
+          if (btn1Value == LOW) {
+            clickedButtons[count] = 1;
+            tone(buzzer, 600, 500);
+            lastTimePressed = millis();
+            count++;
+          }
+          
+          if (btn2Value == LOW) {
+            clickedButtons[count] = 2;
+            tone(buzzer, 600, 500);
+            lastTimePressed = millis();
+            count++;
+          }
+          
+          if (btn3Value == LOW) {
+            clickedButtons[count] = 3;
+            tone(buzzer, 600, 500);
+            lastTimePressed = millis();
+            count++;
+          }
+
+          if (btn4Value == LOW) {
+            clickedButtons[count] = 4;
+            tone(buzzer, 600, 500);
+            lastTimePressed = millis();
+            count++;
+          }
+
         }
 
-        if (btn4Value == LOW) {
-          clickedButtons[count] = 4;
-          count++;
-        }
-      }
+      } 
 
       else{ // Start check
+        lcd.setCursor(0, 0);
+
         for (byte z=0; z<4; z++) {
           if (clickedButtons[z] != rightButtons[z]){
             checkDone = false;
+            count = 0;
             break;
           }
         }
 
-      if (checkDone){
-        Serial.println("correct");
-        count = 0;
-        break;
-      }
-      
-      else{
-        count = 0;
+        if (checkDone) {
+          lcd.clear();
+          lcd.print("Correct!");
+          digitalWrite(redLED, LOW);
+
+          for (byte time=0; time<2; time++) {
+            digitalWrite(blueLED, HIGH);
+            tone(buzzer, 700);
+            delay(300);
+            digitalWrite(blueLED, LOW);
+            noTone(buzzer);
+            delay(300);
+          }
+
+          break; // if pass correct get out of loop
+        }
+
       }
 
-    }
-
-      Serial.println(count);
-      delay(50);
     } // End while loop
 
-  if (!checkDone){
-    while (true){
-      Serial.println("System close");
-    }
+  if (timeOut > 10) {
+    lcd.clear();
+    lcd.print("System closed");
+    while (true); delay(1000);
   }
 
-  } // End alert
+  }
+
+  count = 0; 
+
+  delay(200);
 }
 
 
