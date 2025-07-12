@@ -45,6 +45,40 @@ void correctSignal() {
 }
 
 
+void putNumberOnLCD(byte num, byte index) {
+  switch(index) {
+    case 1:
+      lcd.setCursor(6, 1);
+      lcd.print(' ');
+      lcd.setCursor(6, 1);
+      lcd.print(num);
+      break;
+      
+    case 2:
+      lcd.setCursor(8, 1);
+      lcd.print(' ');
+      lcd.setCursor(8, 1);
+      lcd.print(num);
+      break;
+
+    case 3:
+      lcd.setCursor(10, 1);
+      lcd.print(' ');
+      lcd.setCursor(10, 1);
+      lcd.print(num);
+      break;
+
+    case 4:
+      lcd.setCursor(12, 1);
+      lcd.print(' ');
+      lcd.setCursor(12, 1);
+      lcd.print(num);
+      break;
+
+  }
+}
+
+
 void setup() {
   Serial.begin(9600);
   servo.attach(2);
@@ -86,13 +120,20 @@ void loop() {
 
     lcd.clear();
     lcd.print("Time Left");
-    lcd.print("    SEC");
+    lcd.print("   SEC");
+    lcd.setCursor(0, 1);
+    lcd.print("pass: _ _ _ _");
     
+    servo.write(90);
     
     while ((millis() - lastTime) / 1000 < 10.050){
+      checkDone = true;
+
       lcd.setCursor(9, 0);
-      lcd.print(' ');
-      lcd.print(timeOut);
+      lcd.print("   ");
+      lcd.setCursor(10, 0);
+      lcd.print(10 - timeOut);
+      
 
       timeOut = (millis() - lastTime) / 1000;
 
@@ -105,30 +146,34 @@ void loop() {
         if (millis() - lastTimePressed > 200){  // check no repeat
           if (btn1Value == LOW) {
             clickedButtons[count] = 1;
-            tone(buzzer, 600, 500);
+            tone(buzzer, 600, 300);
             lastTimePressed = millis();
             count++;
+            putNumberOnLCD(1, count);
           }
           
           if (btn2Value == LOW) {
             clickedButtons[count] = 2;
-            tone(buzzer, 600, 500);
+            tone(buzzer, 600, 300);
             lastTimePressed = millis();
             count++;
+            putNumberOnLCD(2, count);
           }
           
           if (btn3Value == LOW) {
             clickedButtons[count] = 3;
-            tone(buzzer, 600, 500);
+            tone(buzzer, 600, 300);
             lastTimePressed = millis();
             count++;
+            putNumberOnLCD(3, count);
           }
 
           if (btn4Value == LOW) {
             clickedButtons[count] = 4;
-            tone(buzzer, 600, 500);
+            tone(buzzer, 600, 300);
             lastTimePressed = millis();
             count++;
+            putNumberOnLCD(4, count);
           }
 
         }
@@ -146,10 +191,11 @@ void loop() {
           }
         }
 
-        if (checkDone) {
+        if (checkDone) { // if passward correct
           lcd.clear();
           lcd.print("Correct!");
           digitalWrite(redLED, LOW);
+          servo.write(0);
 
           for (byte time=0; time<2; time++) {
             digitalWrite(blueLED, HIGH);
@@ -160,18 +206,35 @@ void loop() {
             delay(300);
           }
 
-          break; // if pass correct get out of loop
+          break; // if passward correct get out of loop
+        }
+
+        else{ // if pasward wasnt correct
+          tone(buzzer, 700, 1000);
+          count = 0;
+          lcd.setCursor(6, 1);
+          lcd.print("       ");
+          lcd.setCursor(6, 1);
+          lcd.print("_ _ _ _");
         }
 
       }
 
     } // End while loop
 
-  if (timeOut > 10) {
-    lcd.clear();
-    lcd.print("System closed");
-    while (true); delay(1000);
-  }
+    if (timeOut > 10) {
+      lcd.clear();
+      lcd.print("System closed");
+
+      for (byte z=0; z<3; z++) {
+        digitalWrite(redLED, LOW);
+        tone(buzzer, 700, 1000);
+        delay(500);
+        digitalWrite(redLED, HIGH);
+        delay(500);
+      }
+      while (true); delay(1000);
+    }
 
   }
 
