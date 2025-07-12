@@ -100,7 +100,7 @@ Using millis() instead of delay() to measure time without blocking other code â€
 
 # Pictures:
 ![img1](Arduino_project_alert_timer_PART1.jpeg)
-![img2](Arduino_project_alert_timer_PART2.jpeg);
+
 ![img3](Arduino_project_alert_timer_PART3.jpeg)
 ![img4](Arduino_project_alert_timer_PART4.jpeg)
 ![img5](Arduino_project_alert_timer_PART5.jpeg)
