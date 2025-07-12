@@ -1,5 +1,110 @@
 # Arduino---alert-timer
 
+# Description:
+Arduino---Security-System-with-Keypad-and-Countdown
+
+This Arduino project simulates a security system using:
+
+Ultrasonic sensor
+
+4 push buttons (used as a keypad)
+
+Servo motor
+
+LCD screen
+
+Red and blue LEDs
+
+Buzzer
+
+---
+
+Safe Mode:
+
+The system begins in Safe Mode, which is displayed on the LCD.
+
+The servo motor stays at 0°, representing an unlocked door.
+
+---
+
+Alert Mode (Intrusion Detected):
+
+When the ultrasonic sensor detects an object within a specific distance, the system switches to Alert Mode.
+
+The servo motor rotates to 90°, simulating a locked door.
+
+A 10-second countdown starts and is shown on the LCD, along with the code digits being entered by the user.
+
+The red LED turns ON and stays ON during the entire countdown.
+
+
+> The 4 push buttons are numbered from right to left as:
+1 (far right), 2, 3, 4 (far left)
+
+---
+
+During the Countdown:
+
+The user must enter the correct 4-digit password before the countdown ends.
+
+If the password is correct:
+
+The blue LED turns ON
+
+The LCD displays: "Correct"
+
+The servo returns to 0°
+
+The system goes back to Safe Mode
+
+
+If the password is incorrect:
+
+A buzzer sound is played as a warning
+
+The user can try again, but the countdown continues and is not reset
+
+---
+
+If Time Runs Out Without a Correct Code:
+
+The red LED starts blinking
+
+A long buzzer alert is activated
+
+LCD shows: "System Closed"
+
+The system is locked and cannot be used again
+
+The user must press the Arduino reset button to restart the system
+
+---
+
+What You Learn from This Project:
+
+Implementing a real-time countdown
+
+Writing security logic using password validation
+
+Working with servo motors for locking mechanisms
+
+Reading input from buttons and sensors
+
+Displaying data on an LCD
+
+Providing visual and sound feedback for system status
+
+Using millis() instead of delay() to measure time without blocking other code — keeping the program responsive while managing countdowns or parallel events.
+
+
+
+# Pictures:
+![img1](Arduino_project_alert_timer_PART1.jpeg)
+![img2](Arduino_project_alert_timer_PART2.jpeg)
+![img3](Arduino_project_alert_timer_PART3.jpeg)
+![img4](Arduino_project_alert_timer_PART4.jpeg)
+![img5](Arduino_project_alert_timer_PART5.jpeg)
+
 
 ```cpp
 #include <LiquidCrystal_I2C.h>
